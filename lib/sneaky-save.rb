@@ -26,6 +26,19 @@ module SneakySave
     sneaky_create_or_update
   end
 
+
+  # Provide a public method to overwrite attribute names
+  # for compatibility with gems that overwrite attribute_names
+  def sneaky_attribute_names
+    attribute_names
+  end
+
+  # Provide a public method to overwrite attribute
+  # for compatibility with gems that overwrite attributes
+  def sneaky_attributes
+    attributes
+  end
+
   protected
 
     def sneaky_create_or_update
@@ -39,7 +52,7 @@ module SneakySave
         self.id = sneaky_connection.next_sequence_value(self.class.sequence_name)
       end
 
-      attributes_values = skeaky_attributes_values
+      attributes_values = sneaky_attributes_values
 
       # Remove the id field for databases like Postgres which will raise an error on id being NULL
       if self.id.nil? && !sneaky_connection.prefetch_primary_key?(self.class.table_name)
@@ -66,12 +79,12 @@ module SneakySave
       # Here we have changes --> save them.
       pk = self.class.primary_key
       original_id = changed_attributes.has_key?(pk) ? changes[pk].first : send(pk)
-      !self.class.where(pk => original_id).update_all(attributes).zero?
+      !self.class.where(pk => original_id).update_all(sneaky_attributes).zero?
     end
 
-    def skeaky_attributes_values
+    def sneaky_attributes_values
       if ActiveRecord::VERSION::STRING.split('.').first.to_i > 3
-        send :arel_attributes_with_values_for_create, attribute_names
+        send :arel_attributes_with_values_for_create, sneaky_attribute_names
       else
         send :arel_attributes_values
       end

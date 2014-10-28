@@ -4,6 +4,18 @@ describe SneakySave, use_connection: true do
   context 'new record' do
     subject { Fake.new(name: 'test') }
 
+    describe '#sneaky_attribute_names' do
+      it 'returns the attribute names' do
+        expect(subject.sneaky_attribute_names).to eq(['id', 'name'])
+      end
+    end
+
+    describe '#sneaky_attributes' do
+      it 'returns the attribute names' do
+        expect(subject.sneaky_attributes).to eq({"id"=>nil, "name"=>"test"})
+      end
+    end
+
     describe '#sneaky_save' do
       it 'returns true if everything is good' do
         expect(subject.sneaky_save).to eq(true)
